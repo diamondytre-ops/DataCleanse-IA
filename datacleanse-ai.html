@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCleanse AI — Inteligencia de Datos para PYMES</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060c14;
+      --surface: #0d1a2a;
+      --surface2: #112033;
+      --accent: #00d4ff;
+      --accent2: #0080ff;
+      --accent3: #7b3fe4;
+      --text: #e8f4ff;
+      --muted: #6a8aaa;
+      --border: rgba(0,212,255,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.65;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .5;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 5%;
+      background: rgba(6,12,20,0.8);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.25rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .logo span { color: var(--text); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: .875rem; font-weight: 500;
+      letter-spacing: .02em; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      background: var(--accent); color: var(--bg) !important;
+      padding: .45rem 1.1rem; border-radius: 6px;
+      font-weight: 600 !important; transition: opacity .2s !important;
+    }
+    .nav-cta:hover { opacity: .85; color: var(--bg) !important; }
+
+    /* ── HERO ── */
+    #inicio {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 8rem 5% 5rem;
+      position: relative;
+      text-align: center;
+    }
+
+    .hero-glow {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-55%);
+      width: 700px; height: 700px;
+      background: radial-gradient(ellipse, rgba(0,212,255,.12) 0%, rgba(0,128,255,.06) 40%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-glow2 {
+      position: absolute; bottom: 0; right: 15%;
+      width: 400px; height: 400px;
+      background: radial-gradient(ellipse, rgba(123,63,228,.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.25);
+      color: var(--accent); font-size: .8rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .35rem 1rem; border-radius: 999px;
+      margin-bottom: 2rem;
+      animation: fadeUp .8s ease both;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800; line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      animation: fadeUp .8s .1s ease both;
+    }
+    h1 em { font-style: normal; color: var(--accent); }
+
+    .hero-sub {
+      max-width: 580px; margin: 0 auto 2.8rem;
+      font-size: 1.1rem; color: var(--muted); font-weight: 300;
+      animation: fadeUp .8s .2s ease both;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp .8s .3s ease both;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: var(--bg); font-weight: 700; font-size: .95rem;
+      padding: .85rem 2rem; border-radius: 8px; border: none;
+      cursor: pointer; text-decoration: none; transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 30px rgba(0,212,255,.25);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 40px rgba(0,212,255,.4); }
+
+    .btn-outline {
+      background: transparent; color: var(--text);
+      font-weight: 500; font-size: .95rem;
+      padding: .85rem 2rem; border-radius: 8px;
+      border: 1px solid var(--border); cursor: pointer;
+      text-decoration: none; transition: border-color .2s, color .2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── SECTION BASE ── */
+    section { position: relative; padding: 6rem 5%; }
+
+    .section-label {
+      display: inline-block;
+      font-size: .75rem; font-weight: 700; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; letter-spacing: -.025em;
+      line-height: 1.1; margin-bottom: 1.2rem;
+    }
+
+    .lead {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 620px; font-weight: 300;
+    }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ── HISTORIA ── */
+    #historia { background: var(--surface); }
+
+    .historia-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: center; margin-top: 3rem;
+    }
+
+    .historia-text p { color: var(--muted); margin-bottom: 1rem; font-weight: 300; }
+
+    .historia-stat-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,.05), transparent);
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800; color: var(--accent);
+    }
+    .stat-label { font-size: .85rem; color: var(--muted); margin-top: .25rem; }
+
+    /* ── PROBLEMA / SOLUCIÓN ── */
+    #problema { }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      transition: border-color .3s, transform .3s;
+    }
+    .card:hover { border-color: rgba(0,212,255,.4); transform: translateY(-4px); }
+
+    .card-icon {
+      font-size: 2rem; margin-bottom: 1rem;
+      display: block;
+    }
+    .card h3 {
+      font-family: 'Syne', sans-serif; font-size: 1.15rem;
+      font-weight: 700; margin-bottom: .75rem;
+    }
+    .card p, .card li { font-size: .95rem; color: var(--muted); font-weight: 300; }
+    .card ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .card ul li::before { content: '→ '; color: var(--accent); font-weight: 600; }
+
+    /* ── MISIÓN / VISIÓN / VALORES ── */
+    #mision { background: var(--surface); }
+
+    .mv-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .mv-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.2rem;
+      position: relative; overflow: hidden;
+    }
+    .mv-card.accent-top { border-top: 3px solid var(--accent); }
+    .mv-card.accent-top2 { border-top: 3px solid var(--accent2); }
+    .mv-card.accent-top3 { border-top: 3px solid var(--accent3); }
+
+    .mv-card .icon { font-size: 2.2rem; margin-bottom: 1rem; display: block; }
+    .mv-card h3 {
+      font-family: 'Syne', sans-serif; font-size: 1.1rem;
+      font-weight: 700; margin-bottom: .75rem; color: var(--accent);
+    }
+    .mv-card.accent-top2 h3 { color: var(--accent2); }
+    .mv-card.accent-top3 h3 { color: var(--accent3); }
+    .mv-card p { font-size: .9rem; color: var(--muted); font-weight: 300; line-height: 1.7; }
+
+    .valores-pills {
+      display: flex; flex-wrap: wrap; gap: .75rem; margin-top: .75rem;
+    }
+    .pill {
+      background: rgba(123,63,228,.12); border: 1px solid rgba(123,63,228,.25);
+      color: #b48ae8; font-size: .8rem; font-weight: 600;
+      padding: .35rem .9rem; border-radius: 999px;
+    }
+
+    /* ── SERVICIOS ── */
+    #servicios { }
+
+    .services-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.8rem;
+      transition: all .3s;
+    }
+    .service-card:hover {
+      border-color: rgba(0,212,255,.4);
+      background: var(--surface2);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.4);
+    }
+    .service-card .s-icon {
+      width: 48px; height: 48px;
+      background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.2);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1.2rem;
+    }
+    .service-card h3 {
+      font-family: 'Syne', sans-serif; font-size: 1rem;
+      font-weight: 700; margin-bottom: .5rem;
+    }
+    .service-card p { font-size: .875rem; color: var(--muted); font-weight: 300; }
+
+    /* ── PROYECCIÓN ── */
+    #proyeccion { background: var(--surface); }
+
+    .future-banner {
+      background: linear-gradient(135deg, rgba(0,128,255,.1), rgba(123,63,228,.1));
+      border: 1px solid rgba(0,212,255,.2);
+      border-radius: 20px; padding: 3.5rem;
+      margin-top: 3rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .future-banner::before {
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(ellipse, rgba(0,212,255,.1), transparent 70%);
+    }
+    .future-banner p {
+      font-size: 1.2rem; color: var(--muted); max-width: 640px;
+      margin: 0 auto 2rem; font-weight: 300;
+    }
+
+    /* ── CONTACTO ── */
+    #contacto { }
+
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem;
+      align-items: start; margin-top: 3rem;
+    }
+
+    .contact-info { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .contact-item {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.2rem 1.5rem;
+      text-decoration: none; color: var(--text);
+      transition: border-color .2s, transform .2s;
+    }
+    .contact-item:hover { border-color: var(--accent); transform: translateX(4px); }
+    .contact-item .ci-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(0,212,255,.1); display: flex; align-items: center;
+      justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+    }
+    .contact-item .ci-label { font-size: .75rem; color: var(--muted); margin-bottom: .15rem; }
+    .contact-item .ci-value { font-weight: 500; font-size: .95rem; }
+
+    .contact-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem;
+    }
+    .contact-form h3 {
+      font-family: 'Syne', sans-serif; font-size: 1.2rem;
+      font-weight: 700; margin-bottom: 1.5rem;
+    }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block; font-size: .8rem; font-weight: 600;
+      color: var(--muted); margin-bottom: .4rem;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%; background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: .8rem 1rem;
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: .95rem; outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--accent); }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+
+    .form-group select option { background: var(--surface); }
+
+    .form-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: var(--bg); font-weight: 700; font-size: 1rem;
+      padding: .9rem; border-radius: 8px; border: none;
+      cursor: pointer; transition: opacity .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .form-submit:hover { opacity: .88; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+
+    .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--accent); }
+    .footer-logo span { color: var(--text); }
+    .footer-copy { font-size: .8rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-size: .85rem; color: var(--muted); text-decoration: none;
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ── SCROLL ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .historia-grid,
+      .two-col,
+      .mv-grid,
+      .services-grid,
+      .contact-grid { grid-template-columns: 1fr; }
+      .historia-stat-grid { grid-template-columns: 1fr 1fr; }
+      nav { gap: 1rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#inicio" class="logo">DataCleanse <span>AI</span></a>
+  <ul class="nav-links">
+    <li><a href="#historia">Historia</a></li>
+    <li><a href="#mision">Misión</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proyeccion">Futuro</a></li>
+    <li><a href="#contacto" class="nav-cta">Contáctanos</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="inicio">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div style="position:relative;z-index:1;">
+    <div class="hero-badge">✦ Inteligencia de Datos para PYMES</div>
+    <h1>Tus datos,<br><em>transformados.</em></h1>
+    <p class="hero-sub">DataCleanse AI convierte información caótica en decisiones estratégicas mediante algoritmos de inteligencia artificial diseñados para pequeñas y medianas empresas.</p>
+    <div class="hero-actions">
+      <a href="#servicios" class="btn-primary">Ver Servicios</a>
+      <a href="#contacto" class="btn-outline">Contáctanos</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- HISTORIA -->
+<section id="historia">
+  <div class="section-label">Nuestra Historia</div>
+  <div class="historia-grid reveal">
+    <div class="historia-text">
+      <h2>De estudiantes a<br>solución empresarial</h2>
+      <p>DataCleanse AI nace de la visión de <strong>Guido y Antony</strong>, dos estudiantes que identificaron un problema común en las pequeñas y medianas empresas: grandes volúmenes de información desorganizada, duplicada y poco útil para la toma de decisiones.</p>
+      <p>A partir de esta necesidad desarrollaron una solución tecnológica basada en inteligencia artificial capaz de <strong>limpiar, organizar y transformar datos en información estratégica</strong>.</p>
+    </div>
+    <div class="historia-stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">PYMES</div>
+        <div class="stat-label">Mercado objetivo en México y LATAM</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">IA</div>
+        <div class="stat-label">Tecnología de punta para limpieza de datos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">ISO</div>
+        <div class="stat-label">27001 & GDPR — cumplimiento total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">SaaS</div>
+        <div class="stat-label">Modelo futuro escalable por suscripción</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PROBLEMA & SOLUCIÓN -->
+<section id="problema">
+  <div class="section-label">Problema & Solución</div>
+  <h2>Entendemos tu desafío</h2>
+  <p class="lead">Las PYMES pierden tiempo y dinero gestionando datos desordenados. Nosotros lo resolvemos.</p>
+  <div class="two-col reveal">
+    <div class="card">
+      <span class="card-icon">⚠️</span>
+      <h3>El Problema</h3>
+      <ul>
+        <li>Bases de datos duplicadas o incompletas</li>
+        <li>Información obsoleta que retrasa decisiones</li>
+        <li>Pérdida de tiempo en procesos manuales</li>
+        <li>Costos innecesarios por almacenamiento desordenado</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="card-icon">⚡</span>
+      <h3>Nuestra Solución</h3>
+      <ul>
+        <li>Analiza la estructura de la información</li>
+        <li>Detecta errores y duplicados automáticamente</li>
+        <li>Organiza bases de datos de forma inteligente</li>
+        <li>Genera reportes útiles para la dirección</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- MISIÓN / VISIÓN / VALORES -->
+<section id="mision">
+  <div class="section-label">Quiénes Somos</div>
+  <h2>Misión, Visión & Valores</h2>
+  <div class="mv-grid reveal">
+    <div class="mv-card accent-top">
+      <span class="icon">🎯</span>
+      <h3>Misión</h3>
+      <p>Potenciar la competitividad de las PYMES mediante tecnologías inteligentes que conviertan datos en decisiones estratégicas.</p>
+    </div>
+    <div class="mv-card accent-top2">
+      <span class="icon">🚀</span>
+      <h3>Visión</h3>
+      <p>Ser la empresa líder nacional en soluciones de inteligencia de datos para PYMES, expandiéndonos a toda Latinoamérica.</p>
+    </div>
+    <div class="mv-card accent-top3">
+      <span class="icon">💎</span>
+      <h3>Valores</h3>
+      <div class="valores-pills">
+        <span class="pill">Integridad</span>
+        <span class="pill">Responsabilidad</span>
+        <span class="pill">Confidencialidad</span>
+        <span class="pill">Innovación</span>
+        <span class="pill">Trabajo en equipo</span>
+        <span class="pill">Eficiencia</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="section-label">Lo que Ofrecemos</div>
+  <h2>Nuestros Servicios</h2>
+  <p class="lead">Soluciones completas de inteligencia de datos adaptadas a las necesidades de tu empresa.</p>
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="s-icon">🧹</div>
+      <h3>Limpieza de Bases de Datos</h3>
+      <p>Depuramos, deduplicamos y corregimos tu información para que sea confiable y útil.</p>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">⚙️</div>
+      <h3>Automatización Administrativa</h3>
+      <p>Eliminamos procesos manuales repetitivos con flujos automatizados basados en IA.</p>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">📊</div>
+      <h3>Dashboards e Indicadores</h3>
+      <p>Visualiza el desempeño de tu empresa en tiempo real con paneles de control intuitivos.</p>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">🔮</div>
+      <h3>Análisis Predictivo</h3>
+      <p>Anticipa tendencias y toma decisiones con base en modelos de predicción inteligentes.</p>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">💡</div>
+      <h3>Consultoría Tecnológica</h3>
+      <p>Te acompañamos en la transformación digital con estrategias a la medida de tu negocio.</p>
+    </div>
+    <div class="service-card">
+      <div class="s-icon">🔐</div>
+      <h3>Seguridad y Respaldo</h3>
+      <p>Protegemos tu información con estándares ISO/IEC 27001 y cumplimiento GDPR.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PROYECCIÓN FUTURA -->
+<section id="proyeccion">
+  <div class="section-label">Proyección Futura</div>
+  <h2>Hacia dónde vamos</h2>
+  <div class="future-banner reveal">
+    <p>Nuestra meta es expandir operaciones a nivel nacional, desarrollar soluciones <strong>SaaS por suscripción</strong> accesibles para toda PYME y posicionarnos como el referente tecnológico en inteligencia de datos en <strong>Latinoamérica</strong>.</p>
+    <a href="#contacto" class="btn-primary">Únete al futuro</a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="section-label">Contáctanos</div>
+  <h2>Hablemos de tu empresa</h2>
+  <p class="lead">Estamos listos para analizar tus datos y ayudarte a tomar mejores decisiones.</p>
+  <div class="contact-grid reveal">
+    <div class="contact-info">
+      <a class="contact-item" href="mailto:contacto@datacleanseai.com">
+        <div class="ci-icon">✉️</div>
+        <div>
+          <div class="ci-label">Correo electrónico</div>
+          <div class="ci-value">contacto@datacleanseai.com</div>
+        </div>
+      </a>
+      <a class="contact-item" href="tel:+520000000000">
+        <div class="ci-icon">📞</div>
+        <div>
+          <div class="ci-label">Teléfono</div>
+          <div class="ci-value">+52 000 000 0000</div>
+        </div>
+      </a>
+      <a class="contact-item" href="https://www.datacleanseai.com" target="_blank">
+        <div class="ci-icon">🌐</div>
+        <div>
+          <div class="ci-label">Sitio web</div>
+          <div class="ci-value">www.datacleanseai.com</div>
+        </div>
+      </a>
+      <a class="contact-item" href="https://instagram.com/datacleanseai" target="_blank">
+        <div class="ci-icon">📸</div>
+        <div>
+          <div class="ci-label">Instagram</div>
+          <div class="ci-value">@datacleanseai</div>
+        </div>
+      </a>
+      <a class="contact-item" href="https://linkedin.com" target="_blank">
+        <div class="ci-icon">💼</div>
+        <div>
+          <div class="ci-label">LinkedIn</div>
+          <div class="ci-value">DataCleanse AI</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="contact-form">
+      <h3>Envíanos un mensaje</h3>
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input type="text" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" placeholder="tu@empresa.com">
+      </div>
+      <div class="form-group">
+        <label>Servicio de interés</label>
+        <select>
+          <option value="">Selecciona un servicio</option>
+          <option>Limpieza de Bases de Datos</option>
+          <option>Automatización Administrativa</option>
+          <option>Dashboards e Indicadores</option>
+          <option>Análisis Predictivo</option>
+          <option>Consultoría Tecnológica</option>
+          <option>Seguridad y Respaldo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mensaje</label>
+        <textarea placeholder="Cuéntanos sobre tu empresa y tus necesidades..."></textarea>
+      </div>
+      <button class="form-submit" onclick="handleSubmit(event)">Enviar Mensaje →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">DataCleanse <span>AI</span></div>
+  <div class="footer-copy">© 2025 DataCleanse AI · Todos los derechos reservados</div>
+  <div class="footer-links">
+    <a href="#historia">Historia</a>
+    <a href="#mision">Misión</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target;
+    btn.textContent = '¡Mensaje enviado! ✓';
+    btn.style.background = 'linear-gradient(135deg,#00c853,#00e676)';
+    setTimeout(() => {
+      btn.textContent = 'Enviar Mensaje →';
+      btn.style.background = '';
+    }, 3000);
+  }
+</script>
+</body>
+</html>
